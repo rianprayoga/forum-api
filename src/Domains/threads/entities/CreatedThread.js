@@ -3,19 +3,19 @@ class CreatedThread{
         
         this._checkPayload(payload);
         
-        const {title, body, owner} = payload;
+        const {id, title, owner} = payload;
 
+        this.id = id;
         this.title = title;
-        this.body = body;
         this.owner = owner;
     }
 
-    _checkPayload({title, body, owner}){
-        if (!title || !body || !owner ) {
+    _checkPayload({id, title, owner}){
+        if (!title || !id || !owner ) {
             throw new Error('CREATED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
         }
 
-        if (typeof title !== 'string' || typeof body !== 'string' || typeof owner !== 'string') {
+        if (typeof title !== 'string' || typeof id !== 'string' || typeof owner !== 'string') {
             throw new Error('CREATED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
         }
     }

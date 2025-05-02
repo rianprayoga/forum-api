@@ -9,7 +9,7 @@ describe('a CreateThread entities', () => {
         })).toThrowError('CREATED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
       
         expect(() => new CreatedThread({
-          body: 'abc',
+          id: 'abc',
         })).toThrowError('CREATED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
 
         expect(() => new CreatedThread({
@@ -24,7 +24,7 @@ describe('a CreateThread entities', () => {
 
         const payload = {
             title:123,
-            body:true, 
+            id:true, 
             owner: []
         };
 
@@ -36,14 +36,14 @@ describe('a CreateThread entities', () => {
 
         const payload = {
             title:'dicoding',
-            body:'dicoding d dicoding d', 
+            id:'dicoding d dicoding d', 
             owner: 'user-123'
         };
     
-        const { title, body, owner } = new CreatedThread(payload);
+        const { id, title,  owner } = new CreatedThread(payload);
     
+        expect(id).toEqual(payload.id);
         expect(title).toEqual(payload.title);
-        expect(body).toEqual(payload.body);
         expect(owner).toEqual(payload.owner);
       });
 });
