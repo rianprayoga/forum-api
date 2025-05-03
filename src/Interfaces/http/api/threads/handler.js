@@ -10,12 +10,12 @@ class ThreadsHandler {
     
     const { id: credentialId } = request.auth.credentials;
     
-    const createdThread = await threadUseCase.execute(request.payload, credentialId)
+    const addedThread = await threadUseCase.execute(request.payload, credentialId)
 
     const response = h.response({
       status: 'success',
       data: {
-        createdThread
+        addedThread
       },
     });
     response.code(201);
