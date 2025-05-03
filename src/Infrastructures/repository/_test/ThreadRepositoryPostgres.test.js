@@ -22,18 +22,16 @@ describe('ThreadRepository Postgres', () => {
     describe('addToken function', () => {
         it('should add thread to database', async () => {
 
-            // Arrange
             const fakeIdGenerator = () => '123'; // stub!
+            const owner = 'user-123';
           const repo = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
-          const payload = {title: 'title', body: 'body', owner: 'user-123'}  
+          const payload = {title: 'title', body: 'body'};  
 
-          // Action
-          const {id, title, owner} = await repo.addThread(payload);
+          const result = await repo.addThread(payload, owner);
     
-          // Assert
-          expect(id).toBe('thread-123');
-          expect(title).toBe(payload.title);
-          expect(owner).toBe(payload.owner);
+          expect(result.id).toBe('thread-123');
+          expect(result.title).toBe(payload.title);
+          expect(result.owner).toBe(owner);
 
         });
       });
