@@ -1,18 +1,16 @@
-const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
-const GetThreadUseCase = require("../GetThreadUseCase");
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
+const GetThreadUseCase = require('../GetThreadUseCase');
 
-describe('GetThreadUseCase', ()=> {
+describe('GetThreadUseCase', () => {
+  it('should execute sucessfully', async () => {
+    const threadId = 'threadId';
 
-    it('should execute sucessfully', async ()=>{
-        const threadId = 'threadId';
+    const threadRepo = new ThreadRepository();
+    threadRepo.getThread = jest.fn(() => Promise.resolve());
 
-        const threadRepo = new ThreadRepository();
-        threadRepo.getThread = jest.fn(()=> Promise.resolve());
+    const usecase = new GetThreadUseCase(threadRepo);
+    await usecase.execute(threadId);
 
-        const usecase = new GetThreadUseCase(threadRepo);
-        await usecase.execute(threadId);
-
-        expect(threadRepo.getThread).toBeCalledWith(threadId);
-    });
-
+    expect(threadRepo.getThread).toBeCalledWith(threadId);
+  });
 });

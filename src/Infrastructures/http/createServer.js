@@ -1,7 +1,7 @@
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
 const ClientError = require('../../Commons/exceptions/ClientError');
 const DomainErrorTranslator = require('../../Commons/exceptions/DomainErrorTranslator');
-const Jwt = require('@hapi/jwt');
 
 const users = require('../../Interfaces/http/api/users');
 const authentications = require('../../Interfaces/http/api/authentications');
@@ -11,7 +11,7 @@ const createServer = async (container) => {
   const server = Hapi.server({
     host: process.env.HOST,
     port: process.env.PORT,
-    debug: { request: ['error'] }
+    debug: { request: ['error'] },
   });
 
   await server.register([
@@ -44,14 +44,13 @@ const createServer = async (container) => {
     {
       plugin: authentications,
       options: { container },
-    },{
+    }, {
       plugin: threads,
-      options: {container}
-    }
+      options: { container },
+    },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
-
     const { response } = request;
 
     if (response instanceof Error) {

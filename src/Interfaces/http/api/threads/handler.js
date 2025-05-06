@@ -10,15 +10,15 @@ class ThreadsHandler {
 
   async postThreadHandler(request, h) {
     const addThreadUseCase = this._container.getInstance(AddThreadUseCase.name);
-    
+
     const { id: credentialId } = request.auth.credentials;
-    
-    const addedThread = await addThreadUseCase.execute(request.payload, credentialId)
+
+    const addedThread = await addThreadUseCase.execute(request.payload, credentialId);
 
     const response = h.response({
       status: 'success',
       data: {
-        addedThread
+        addedThread,
       },
     });
     response.code(201);
@@ -27,23 +27,23 @@ class ThreadsHandler {
 
   async postCommentHandler(request, h) {
     const addCommentUseCase = this._container.getInstance(AddCommentUseCase.name);
-    
+
     const { id: credentialId } = request.auth.credentials;
     const { threadId } = request.params;
-    
+
     const addedComment = await addCommentUseCase.execute(threadId, credentialId, request.payload);
 
     const response = h.response({
       status: 'success',
       data: {
-        addedComment
+        addedComment,
       },
     });
     response.code(201);
     return response;
   }
 
-  async deleteCommentHandler(request, h){
+  async deleteCommentHandler(request, h) {
     const deleteCommentUseCase = this._container.getInstance(DeleteCommentuseCae.name);
 
     const { id: credentialId } = request.auth.credentials;
@@ -56,8 +56,8 @@ class ThreadsHandler {
     response.code(200);
     return response;
   }
-  
-  async getThreadHandler(request, h){
+
+  async getThreadHandler(request, h) {
     const usecase = this._container.getInstance(GetThreadUseCase.name);
     const { threadId } = request.params;
 
@@ -65,14 +65,13 @@ class ThreadsHandler {
     const response = h.response({
       status: 'success',
       data: {
-        thread
-      }
+        thread,
+      },
     });
-    
+
     response.code(200);
     return response;
   }
-
 }
 
 module.exports = ThreadsHandler;

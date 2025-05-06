@@ -32,7 +32,7 @@ const AddUserUseCase = require('../Applications/use_case/AddUserUseCase');
 const LoginUserUseCase = require('../Applications/use_case/LoginUserUseCase');
 const LogoutUserUseCase = require('../Applications/use_case/LogoutUserUseCase');
 const RefreshAuthenticationUseCase = require('../Applications/use_case/RefreshAuthenticationUseCase');
-const AddThreadUseCase =  require('../Applications/use_case/AddThreadUseCase');
+const AddThreadUseCase = require('../Applications/use_case/AddThreadUseCase');
 const AddCommentUseCase = require('../Applications/use_case/AddCommentUseCase');
 const DeleteCommentuseCae = require('../Applications/use_case/DeleteCommentUseCase');
 const GetThreadUseCase = require('../Applications/use_case/GetThreadUseCase');
@@ -92,26 +92,26 @@ container.register([
   {
     key: ThreadRepository.name,
     Class: ThreadRepositoryPostgres,
-    parameter:{
-      dependencies:[
-        {concrete: pool},
+    parameter: {
+      dependencies: [
+        { concrete: pool },
         {
           concrete: nanoid,
         },
-      ]
-    }
+      ],
+    },
   },
   {
     key: CommentRepository.name,
     Class: CommentRepositoryPostgres,
-    parameter:{
-      dependencies:[
-        {concrete: pool},
+    parameter: {
+      dependencies: [
+        { concrete: pool },
         {
           concrete: nanoid,
         },
-      ]
-    }
+      ],
+    },
   },
 ]);
 
@@ -195,10 +195,10 @@ container.register([
     parameter: {
       dependencies: [
         {
-          internal: ThreadRepository.name
-        }
-      ]
-    }
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
   },
   {
     key: AddCommentUseCase.name,
@@ -214,8 +214,8 @@ container.register([
           name: 'threadRepository',
           internal: ThreadRepository.name,
         },
-      ]
-    }
+      ],
+    },
   },
   {
     key: DeleteCommentuseCae.name,
@@ -231,8 +231,8 @@ container.register([
           name: 'threadRepository',
           internal: ThreadRepository.name,
         },
-      ]
-    }
+      ],
+    },
   },
   {
     key: GetThreadUseCase.name,
@@ -240,10 +240,10 @@ container.register([
     parameter: {
       dependencies: [
         {
-          internal: ThreadRepository.name
-        }
-      ]
-    }
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
   },
 ]);
 
