@@ -23,9 +23,12 @@ describe('CommentRepository postgres', () => {
     const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
     const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
 
-    await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
+    const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
 
     const result = await commentRepo.addComment('thread-321', '1', 'content');
+
+    await expect(commentRepo.validateCommentExist(threadId, result.id))
+      .resolves.not.toThrowError();
 
     expect(result.id).toEqual('comment-123');
     expect(result.content).toEqual('content');
@@ -66,5 +69,14 @@ describe('CommentRepository postgres', () => {
     await commentRepo.addComment('thread-321', '1', 'content');
 
     await commentRepo.markAsDeleted('comment-123');
+
+    await expect(commentRepo.validateCommentExist('thread-321', 'comment-123'))
+      .rejects.toThrow(NotFoundError);
+  });
+
+  it('should throw error when comment not found', async () => {
+    const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
+
+    await expect(commentRepo.validateCommentExist('comment-121', '1')).rejects.toThrow(NotFoundError);
   });
 });

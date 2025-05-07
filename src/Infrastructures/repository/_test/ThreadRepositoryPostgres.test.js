@@ -26,6 +26,7 @@ describe('ThreadRepository Postgres', () => {
     const payload = { title: 'title', body: 'body' };
 
     const result = await repo.addThread(payload, owner);
+    await repo.validateThreadExist(result.id);
 
     expect(result.id).toBe('thread-123');
     expect(result.title).toBe(payload.title);
@@ -48,7 +49,10 @@ describe('ThreadRepository Postgres', () => {
 
     const result = await repo.getThread('thread-123');
 
-    expect(result.id).toBe('thread-123');
-    expect(result.title).toBe(payload.title);
+    expect(result.id).toEqual('thread-123');
+    expect(result.title).toEqual(payload.title);
+    expect(result.body).toEqual(payload.body);
+    expect(result.username).toEqual('dicoding');
+    expect(result.comments).toEqual([]);
   });
 });

@@ -8,4 +8,18 @@ describe('ReplyRepository interface', () => {
       .rejects
       .toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
+  it('should throw error when invoke abstract behavior', async () => {
+    const repository = new ReplyRepository();
+
+    await expect(repository.deleteReply({}))
+      .rejects
+      .toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  });
+  it('should throw error when invoke abstract behavior', async () => {
+    const repository = new ReplyRepository();
+
+    await expect(repository.getReplies({}))
+      .rejects
+      .toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  });
 });
