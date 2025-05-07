@@ -1,5 +1,7 @@
 const ReplyRepository = require('../../Domains/threads/ReplyRepository');
 const AddedReply = require('../../Domains/threads/entities/AddedReply');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
   constructor(pool, idGenerator) {
@@ -19,6 +21,26 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     const result = await this._pool.query(query);
 
     return new AddedReply({ ...result.rows[0] });
+  }
+
+  async deleteReply(commentId, replyId, credentialId) {
+    const selectResult = await this._pool.query({
+      text: 'SELECT owner FROM replies r WHERE r.comment_id = $1 AND r.id = $2',
+      values: [commentId, replyId],
+    });
+
+    if (!selectResult.rowCount) {
+      throw new NotFoundError('reply not found.');
+    }
+
+    if (selectResult.rows[0].owner !== credentialId) {
+      throw new AuthorizationError('tidak bisa menghapus reply');
+    }
+
+    await this._pool.query({
+      text: 'UPDATE replies r SET is_deleted = TRUE WHERE r.id = $1',
+      values: [replyId],
+    });
   }
 }
 

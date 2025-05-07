@@ -36,6 +36,14 @@ const routes = (handler) => ([
       auth: 'client_jwt',
     },
   },
+  {
+    method: 'DELETE',
+    path: '/threads/{threadId}/comments/{commentId}/replies/{replyId}',
+    handler: (request, h) => handler.deleteReplyHandler(request, h),
+    options: {
+      auth: 'client_jwt',
+    },
+  },
 ]);
 
 module.exports = routes;
