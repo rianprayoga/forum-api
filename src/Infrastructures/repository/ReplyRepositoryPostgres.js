@@ -2,6 +2,7 @@ const ReplyRepository = require('../../Domains/threads/ReplyRepository');
 const AddedReply = require('../../Domains/threads/entities/AddedReply');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const { DetailReply } = require('../../Domains/threads/entities/DetailThread');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
   constructor(pool, idGenerator) {
@@ -41,6 +42,29 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       text: 'UPDATE replies r SET is_deleted = TRUE WHERE r.id = $1',
       values: [replyId],
     });
+  }
+
+  async getReplies(commentIds) {
+    const replyResult = await this._pool.query({
+      text:
+      `select r.id, r.comment_id as commentId, u.username, created_date as date, content, is_deleted from replies 
+      r left join users u on r.owner = u.id where comment_id = ANY ($1) order by  r.created_date ASC`,
+      values: [commentIds],
+    });
+
+    const map = new Map();
+    replyResult.rows.forEach((element) => {
+      const commentId = element.commentid;
+      if (map.has(commentId)) {
+        const tmp = map.get(commentId);
+        tmp.push(new DetailReply(element));
+        map.set(commentId, tmp);
+      } else {
+        map.set(commentId, [new DetailReply(element)]);
+      }
+    });
+
+    return map;
   }
 }
 
