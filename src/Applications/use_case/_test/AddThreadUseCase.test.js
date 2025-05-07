@@ -8,11 +8,15 @@ describe('AddThreadUsecase', () => {
     const payload = { title: 'title', body: 'body' };
 
     const threadRepo = new ThreadRepository();
-    threadRepo.addThread = jest.fn(() => Promise.resolve());
+    threadRepo.addThread = jest.fn(() => Promise.resolve({ title: 'title', body: 'body', id: 'id' }));
 
     const usecase = new AddThreadUseCase(threadRepo);
 
-    await usecase.execute(payload, credentialId);
+    const result = await usecase.execute(payload, credentialId);
+
+    expect(result.id).toEqual('id');
+    expect(result.body).toEqual(payload.body);
+    expect(result.title).toEqual(payload.title);
 
     expect(threadRepo.addThread)
       .toBeCalledWith(new CreateThread(payload), credentialId);

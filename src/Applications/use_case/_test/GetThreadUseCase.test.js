@@ -21,7 +21,7 @@ describe('GetThreadUseCase', () => {
     }]));
 
     const map = new Map();
-    map.set(commentId, { content: 'reply' });
+    map.set(commentId, [{ content: 'reply' }]);
     const replyRepo = new ReplyRepository();
     replyRepo.getReplies = jest.fn(() => Promise.resolve(map));
 
@@ -31,7 +31,11 @@ describe('GetThreadUseCase', () => {
       replyRepository: replyRepo,
     });
 
-    await usecase.execute(threadId);
+    const result = await usecase.execute(threadId);
+
+    expect(result.id).toEqual(threadId);
+    expect(result.comments[0].id).toEqual(commentId);
+    expect(result.comments[0].replies[0].content).toEqual('reply');
 
     expect(threadRepo.getThread).toBeCalledWith(threadId);
     expect(commentRepo.getComments).toBeCalledWith(threadId);
