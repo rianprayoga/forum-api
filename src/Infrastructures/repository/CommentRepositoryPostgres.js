@@ -44,6 +44,17 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId],
     });
   }
+
+  async validateCommentExist(threadId, commentId) {
+    const result = await this._pool.query({
+      text: 'SELECT thread_id, c.id FROM comments c WHERE c.is_deleted = FALSE AND c.thread_id = $1 AND c.id = $2',
+      values: [threadId, commentId],
+    });
+
+    if (!result.rowCount) {
+      throw new NotFoundError('comment tidak ditemukan');
+    }
+  }
 }
 
 module.exports = CommentRepositoryPostgres;

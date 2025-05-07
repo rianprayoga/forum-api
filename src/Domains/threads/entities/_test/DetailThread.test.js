@@ -2,12 +2,15 @@ const { DetailThread, DetailComment } = require('../DetailThread');
 
 describe('DetailThread', () => {
   it('should create sucessfully when comment deleted', () => {
-    const comment = new DetailComment({
-      id: '321',
-      is_deleted: true,
-      username: 'what',
-      content: 'where',
-    });
+    const comment = new DetailComment(
+      {
+        id: '321',
+        is_deleted: true,
+        username: 'what',
+        content: 'where',
+      },
+      [],
+    );
     const detail = new DetailThread({ id: '123' }, [comment]);
 
     expect(detail.id).toEqual('123');
@@ -17,12 +20,15 @@ describe('DetailThread', () => {
   });
 
   it('should create sucessfully when comment not deleted', () => {
-    const comment = new DetailComment({
-      id: '321',
-      is_deleted: false,
-      username: 'what',
-      content: 'where',
-    });
+    const comment = new DetailComment(
+      {
+        id: '321',
+        is_deleted: false,
+        username: 'what',
+        content: 'where',
+      },
+      [],
+    );
     const detail = new DetailThread({ id: '123' }, [comment]);
 
     expect(detail.id).toEqual('123');

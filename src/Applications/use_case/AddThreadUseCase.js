@@ -7,7 +7,7 @@ class AddThreadUseCase {
 
   async execute(payload, credentialId) {
     const data = new CreateThread(payload);
-    return await this._threadRepository.addThread(data, credentialId);
+    return this._threadRepository.addThread(data, credentialId);
   }
 }
 

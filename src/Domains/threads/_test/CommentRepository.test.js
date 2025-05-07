@@ -13,5 +13,8 @@ describe('CommentRepository', () => {
     expect(repo.markAsDeleted(''))
       .rejects
       .toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    expect(repo.validateCommentExist(''))
+      .rejects
+      .toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
 });

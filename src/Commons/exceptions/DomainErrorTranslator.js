@@ -23,6 +23,8 @@ DomainErrorTranslator._directories = {
   'CREATE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('Mismatch data type.'),
   'ADD_COMMENT_USE_CASE.MISSING_ATTRIBUTE': new InvariantError('Missing field.'),
   'ADD_COMMENT_USE_CASE.MISMATCH_DATA_TYPE_SPECIFICATION': new InvariantError('Mismatch data type.'),
+  'REPLY_USE_CASE.MISSING_CONTENT': new InvariantError('Missing field.'),
+  'REPLY_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('Mismatch data type.'),
 };
 
 module.exports = DomainErrorTranslator;

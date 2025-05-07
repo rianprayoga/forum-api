@@ -4,7 +4,7 @@ class GetThreadUseCase {
   }
 
   async execute(threadId) {
-    return await this._threadRepository.getThread(threadId);
+    return this._threadRepository.getThread(threadId);
   }
 }
 

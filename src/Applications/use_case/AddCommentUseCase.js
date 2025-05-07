@@ -8,7 +8,7 @@ class AddCommentUseCase {
     this._validatePayload(payload);
 
     await this._threadRepository.validateThreadExist(threadId);
-    return await this._commentRepository.addComment(threadId, owner, payload.content);
+    return this._commentRepository.addComment(threadId, owner, payload.content);
   }
 
   _validatePayload(payload) {

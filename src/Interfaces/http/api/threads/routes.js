@@ -28,6 +28,14 @@ const routes = (handler) => ([
       auth: 'client_jwt',
     },
   },
+  {
+    method: 'POST',
+    path: '/threads/{threadId}/comments/{commentId}/replies',
+    handler: (request, h) => handler.postReplyHandler(request, h),
+    options: {
+      auth: 'client_jwt',
+    },
+  },
 ]);
 
 module.exports = routes;
