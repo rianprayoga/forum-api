@@ -85,4 +85,43 @@ describe('ReplyRepository postgres', () => {
       .rejects
       .toThrow(AuthorizationError);
   });
+
+  it('validateOwnership should not throw error ', async () => {
+    await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
+    const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
+    const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
+    const replyRepo = new ReplyRepositoryPostgres(pool, () => 'abc');
+
+    const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
+    const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
+    const { id: replyId } = await replyRepo.addReply(commentId, 'test', '1');
+
+    await expect(replyRepo.validateOwnership(commentId, replyId, '1'))
+      .resolves.not.toThrowError();
+  });
+
+  it('should getReplies sucessfully', async () => {
+    await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
+    const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
+    const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
+    const replyRepo = new ReplyRepositoryPostgres(pool, () => 'abc');
+
+    const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
+    const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
+
+    const firstResult = await replyRepo.addReply(commentId, 'test', '1');
+
+    const replies = await replyRepo.getReplies([commentId]);
+
+    expect(firstResult.id).toEqual('reply-abc');
+    expect(firstResult.content).toEqual('test');
+    expect(firstResult.owner).toEqual('1');
+
+    expect(replies[0].id).toEqual('reply-abc');
+    expect(replies[0].username).toEqual('dicoding');
+    expect(replies[0].content).toEqual('test');
+    expect(replies[0].commentid).toEqual(commentId);
+    expect(replies[0].is_deleted).toEqual(false);
+    expect(replies[0].date).not.toBeUndefined();
+  });
 });

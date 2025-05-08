@@ -35,7 +35,7 @@ describe('CommentRepository postgres', () => {
     expect(result.owner).toEqual('1');
   });
 
-  it('should throw error when thread-id not found', async () => {
+  it('validateCommentOwnership should throw error when thread-id not found', async () => {
     await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
     const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
     const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
@@ -47,7 +47,7 @@ describe('CommentRepository postgres', () => {
     await expect(commentRepo.validateCommentOwnership('comment-121', '1')).rejects.toThrow(NotFoundError);
   });
 
-  it('should throw error when credential-id mismatch', async () => {
+  it('validateCommentOwnership should throw error when credential-id mismatch', async () => {
     await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
     const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
     const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
@@ -57,6 +57,18 @@ describe('CommentRepository postgres', () => {
     await commentRepo.addComment('thread-321', '1', 'content');
 
     await expect(commentRepo.validateCommentOwnership('comment-123', '2')).rejects.toThrow(AuthorizationError);
+  });
+
+  it('validateCommentOwnership should not throw ', async () => {
+    await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
+    const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
+    const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
+
+    await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
+
+    await commentRepo.addComment('thread-321', '1', 'content');
+
+    await expect(commentRepo.validateCommentOwnership('comment-123', '1')).resolves.not.toThrowError();
   });
 
   it('should markAsDeleted sucessfully', async () => {
@@ -73,10 +85,21 @@ describe('CommentRepository postgres', () => {
     expect(CommentTableTestHelper.getIsDeletedStatus('comment-123')).resolves.toEqual(true);
   });
 
-  it('should throw error when comment not found', async () => {
+  it('validateCommentExist should throw error when comment not found', async () => {
     const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
 
     await expect(commentRepo.validateCommentExist('comment-121', '1')).rejects.toThrow(NotFoundError);
+  });
+
+  it('validateCommentExist should not throw error ', async () => {
+    await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
+    const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
+    const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
+
+    const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
+    const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
+
+    await expect(commentRepo.validateCommentExist(commentId, '1')).rejects.toThrow(NotFoundError);
   });
 
   it('should getCommets sucessfully', async () => {

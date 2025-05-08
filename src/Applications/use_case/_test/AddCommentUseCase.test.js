@@ -1,6 +1,7 @@
 const AddCommentUseCase = require('../AddCommentUseCase');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const CommentRepository = require('../../../Domains/threads/CommentRepository');
+const CreatedComment = require('../../../Domains/threads/entities/CreatedComment');
 
 describe('AddCommentUseCase', () => {
   it('should throw error when contens is missing', async () => {
@@ -32,14 +33,16 @@ describe('AddCommentUseCase', () => {
     mockThreadRepo.validateThreadExist = jest.fn(() => Promise.resolve());
 
     const commentRepo = new CommentRepository();
-    commentRepo.addComment = jest.fn(() => Promise.resolve());
+    commentRepo.addComment = jest.fn(() => Promise.resolve(new CreatedComment({ id: 'id', content: 'content', owner })));
 
     const usecase = new AddCommentUseCase({
       threadRepository: mockThreadRepo,
       commentRepository: commentRepo,
     });
 
-    await usecase.execute(threadId, owner, payload);
+    const result = await usecase.execute(threadId, owner, payload);
+
+    expect(result).toStrictEqual(new CreatedComment({ id: 'id', content: 'content', owner }));
 
     expect(mockThreadRepo.validateThreadExist)
       .toBeCalledWith(threadId);

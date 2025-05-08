@@ -8,6 +8,7 @@ describe('GetThreadUseCase', () => {
   it('should execute sucessfully', async () => {
     const threadId = 'threadId';
     const commentId = 'commentId';
+    const secondCommentId = 'commentI2';
 
     const threadRepo = new ThreadRepository();
     threadRepo.getThread = jest.fn(() => Promise.resolve({
@@ -19,7 +20,12 @@ describe('GetThreadUseCase', () => {
     commentRepo.getComments = jest.fn(() => Promise.resolve([{
       id: commentId,
       replies: [],
-    }]));
+    },
+    {
+      id: secondCommentId,
+      replies: [],
+    },
+    ]));
 
     const replyRepo = new ReplyRepository();
     replyRepo.getReplies = jest.fn(() => Promise.resolve([{
@@ -55,12 +61,16 @@ describe('GetThreadUseCase', () => {
           username: 'username',
         }),
         ],
-      }],
+      }, {
+        id: secondCommentId,
+        replies: [],
+      },
+      ],
     });
 
     expect(threadRepo.getThread).toBeCalledWith(threadId);
     expect(commentRepo.getComments).toBeCalledWith(threadId);
-    expect(replyRepo.getReplies).toBeCalledWith([commentId]);
+    expect(replyRepo.getReplies).toBeCalledWith([commentId, secondCommentId]);
   });
 
   it('should execute with no comments sucessfully', async () => {
