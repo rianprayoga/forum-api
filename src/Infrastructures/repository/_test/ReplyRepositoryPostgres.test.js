@@ -35,7 +35,6 @@ describe('ReplyRepository postgres', () => {
     const secondResult = await replyRepoSecond.addReply(commentId, 'test 2', '1');
 
     const replies = await replyRepo.getReplies([commentId]);
-    const reply = replies.get(commentId);
 
     expect(firstResult.id).toEqual('reply-abc');
     expect(firstResult.content).toEqual('test');
@@ -44,9 +43,9 @@ describe('ReplyRepository postgres', () => {
     expect(secondResult.content).toEqual('test 2');
     expect(secondResult.owner).toEqual('1');
 
-    expect(reply[0].id).toEqual('reply-abc');
-    expect(reply[0].username).toEqual('dicoding');
-    expect(reply[0].content).toEqual('test');
+    expect(replies[0].id).toEqual('reply-abc');
+    expect(replies[0].username).toEqual('dicoding');
+    expect(replies[0].content).toEqual('test');
   });
 
   it('should delete reply sucessfully', async () => {
@@ -59,27 +58,20 @@ describe('ReplyRepository postgres', () => {
     const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
     const { id: replyId } = await replyRepo.addReply(commentId, 'test', '1');
 
-    await replyRepo.deleteReply(commentId, replyId, '1');
-
-    const replies = await replyRepo.getReplies([commentId]);
-
-    const reply = replies.get(commentId);
+    await replyRepo.deleteReply(replyId);
 
     expect(ReplyTableTestHelper.getIsDeletedStatus(replyId)).resolves.toEqual(true);
-    expect(reply[0].id).toEqual('reply-abc');
-    expect(reply[0].username).toEqual('dicoding');
-    expect(reply[0].content).toEqual('**balasan telah dihapus**');
   });
 
-  it('deleteReply should throw error when reply not found', async () => {
+  it('validateOwnership should throw error when reply not found', async () => {
     const replyRepo = new ReplyRepositoryPostgres(pool, () => 'abc');
 
-    await expect(replyRepo.deleteReply('commentId', 'replyId', '1'))
+    await expect(replyRepo.validateOwnership('commentId', 'replyId', '1'))
       .rejects
       .toThrow(NotFoundError);
   });
 
-  it('deleteReply should throw error when mismatch owner', async () => {
+  it('validateOwnership should throw error when mismatch owner', async () => {
     await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
     const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
     const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
@@ -89,7 +81,7 @@ describe('ReplyRepository postgres', () => {
     const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
     const { id: replyId } = await replyRepo.addReply(commentId, 'test', '1');
 
-    await expect(replyRepo.deleteReply(commentId, replyId, '2'))
+    await expect(replyRepo.validateOwnership(commentId, replyId, '2'))
       .rejects
       .toThrow(AuthorizationError);
   });

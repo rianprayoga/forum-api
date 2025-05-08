@@ -2,6 +2,7 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const CommentRepository = require('../../../Domains/threads/CommentRepository');
 const ReplyRepository = require('../../../Domains/threads/ReplyRepository');
 const GetThreadUseCase = require('../GetThreadUseCase');
+const { DetailReply } = require('../../../Domains/threads/entities/DetailThread');
 
 describe('GetThreadUseCase', () => {
   it('should execute sucessfully', async () => {
@@ -20,10 +21,10 @@ describe('GetThreadUseCase', () => {
       replies: [],
     }]));
 
-    const map = new Map();
-    map.set(commentId, [{ content: 'reply' }]);
     const replyRepo = new ReplyRepository();
-    replyRepo.getReplies = jest.fn(() => Promise.resolve(map));
+    replyRepo.getReplies = jest.fn(() => Promise.resolve([{
+      commentid: commentId, content: 'reply', date: 'date', id: 'id', username: 'username',
+    }]));
 
     const usecase = new GetThreadUseCase({
       threadRepository: threadRepo,
@@ -37,9 +38,12 @@ describe('GetThreadUseCase', () => {
       id: 'threadId',
       comments: [{
         id: 'commentId',
-        replies: [{
+        replies: [new DetailReply({
           content: 'reply',
-        }],
+          date: 'date',
+          id: 'id',
+          username: 'username',
+        })],
       }],
     });
 

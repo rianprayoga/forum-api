@@ -2,7 +2,6 @@ const ReplyRepository = require('../../Domains/threads/ReplyRepository');
 const AddedReply = require('../../Domains/threads/entities/AddedReply');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
-const { DetailReply } = require('../../Domains/threads/entities/DetailThread');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
   constructor(pool, idGenerator) {
@@ -24,7 +23,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     return new AddedReply({ ...result.rows[0] });
   }
 
-  async deleteReply(commentId, replyId, credentialId) {
+  async validateOwnership(commentId, replyId, credentialId) {
     const selectResult = await this._pool.query({
       text: 'SELECT owner FROM replies r WHERE r.comment_id = $1 AND r.id = $2',
       values: [commentId, replyId],
@@ -37,7 +36,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     if (selectResult.rows[0].owner !== credentialId) {
       throw new AuthorizationError('tidak bisa menghapus reply');
     }
+  }
 
+  async deleteReply(replyId) {
     await this._pool.query({
       text: 'UPDATE replies r SET is_deleted = TRUE WHERE r.id = $1',
       values: [replyId],
@@ -52,19 +53,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [commentIds],
     });
 
-    const map = new Map();
-    replyResult.rows.forEach((element) => {
-      const commentId = element.commentid;
-      if (map.has(commentId)) {
-        const tmp = map.get(commentId);
-        tmp.push(new DetailReply(element));
-        map.set(commentId, tmp);
-      } else {
-        map.set(commentId, [new DetailReply(element)]);
-      }
-    });
-
-    return map;
+    return replyResult.rows;
   }
 }
 
