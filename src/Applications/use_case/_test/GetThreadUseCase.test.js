@@ -24,7 +24,11 @@ describe('GetThreadUseCase', () => {
     const replyRepo = new ReplyRepository();
     replyRepo.getReplies = jest.fn(() => Promise.resolve([{
       commentid: commentId, content: 'reply', date: 'date', id: 'id', username: 'username',
-    }]));
+    },
+    {
+      commentid: commentId, content: 'reply', date: 'date', id: 'id2', username: 'username',
+    },
+    ]));
 
     const usecase = new GetThreadUseCase({
       threadRepository: threadRepo,
@@ -43,7 +47,14 @@ describe('GetThreadUseCase', () => {
           date: 'date',
           id: 'id',
           username: 'username',
-        })],
+        }),
+        new DetailReply({
+          content: 'reply',
+          date: 'date',
+          id: 'id2',
+          username: 'username',
+        }),
+        ],
       }],
     });
 
