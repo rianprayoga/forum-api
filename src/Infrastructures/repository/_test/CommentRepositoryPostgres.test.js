@@ -70,8 +70,7 @@ describe('CommentRepository postgres', () => {
 
     await commentRepo.markAsDeleted('comment-123');
 
-    await expect(commentRepo.validateCommentExist('thread-321', 'comment-123'))
-      .rejects.toThrow(NotFoundError);
+    expect(CommentTableTestHelper.getIsDeletedStatus('comment-123')).resolves.toEqual(true);
   });
 
   it('should throw error when comment not found', async () => {

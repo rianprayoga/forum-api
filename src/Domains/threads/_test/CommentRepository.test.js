@@ -16,5 +16,8 @@ describe('CommentRepository', () => {
     expect(repo.validateCommentExist(''))
       .rejects
       .toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+    expect(repo.getComments(''))
+      .rejects
+      .toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   });
 });

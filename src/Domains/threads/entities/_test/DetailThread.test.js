@@ -16,11 +16,15 @@ describe('DetailThread', () => {
       id: '123',
       username: 'what',
       body: 'where',
+      title: 'who',
+      date: 'date',
     }, [comment]);
 
     expect(detail.id).toEqual('123');
     expect(detail.username).toEqual('what');
     expect(detail.body).toEqual('where');
+    expect(detail.title).toEqual('who');
+    expect(detail.date).toEqual('date');
     expect(detail.comments[0].content).toEqual('**komentar telah dihapus**');
     expect(detail.comments[0].username).toEqual('what');
     expect(detail.comments[0].id).toEqual('321');

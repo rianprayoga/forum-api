@@ -26,7 +26,7 @@ describe('ThreadRepository Postgres', () => {
     const payload = { title: 'title', body: 'body' };
 
     const result = await repo.addThread(payload, owner);
-    await repo.validateThreadExist(result.id);
+    expect(repo.validateThreadExist(result.id)).resolves.not.toThrow(NotFoundError);
 
     expect(result.id).toBe('thread-123');
     expect(result.title).toBe(payload.title);
@@ -54,5 +54,11 @@ describe('ThreadRepository Postgres', () => {
     expect(result.body).toEqual(payload.body);
     expect(result.username).toEqual('dicoding');
     expect(result.comments).toEqual([]);
+  });
+
+  it('getThread should throw when thread not found', async () => {
+    const repo = new ThreadRepositoryPostgres(pool, () => '123');
+
+    await expect(repo.getThread('id')).rejects.toThrow(NotFoundError);
   });
 });
