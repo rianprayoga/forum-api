@@ -33,12 +33,47 @@ describe('GetThreadUseCase', () => {
 
     const result = await usecase.execute(threadId);
 
-    expect(result.id).toEqual(threadId);
-    expect(result.comments[0].id).toEqual(commentId);
-    expect(result.comments[0].replies[0].content).toEqual('reply');
+    expect(result).toStrictEqual({
+      id: 'threadId',
+      comments: [{
+        id: 'commentId',
+        replies: [{
+          content: 'reply',
+        }],
+      }],
+    });
 
     expect(threadRepo.getThread).toBeCalledWith(threadId);
     expect(commentRepo.getComments).toBeCalledWith(threadId);
     expect(replyRepo.getReplies).toBeCalledWith([commentId]);
+  });
+
+  it('should execute with no comments sucessfully', async () => {
+    const threadId = 'threadId';
+
+    const threadRepo = new ThreadRepository();
+    threadRepo.getThread = jest.fn(() => Promise.resolve({
+      comments: [],
+      id: threadId,
+    }));
+
+    const commentRepo = new CommentRepository();
+    commentRepo.getComments = jest.fn(() => Promise.resolve([]));
+
+    const usecase = new GetThreadUseCase({
+      threadRepository: threadRepo,
+      commentRepository: commentRepo,
+      replyRepository: new ReplyRepository(),
+    });
+
+    const result = await usecase.execute(threadId);
+
+    expect(result).toStrictEqual({
+      id: 'threadId',
+      comments: [],
+    });
+
+    expect(threadRepo.getThread).toBeCalledWith(threadId);
+    expect(commentRepo.getComments).toBeCalledWith(threadId);
   });
 });

@@ -78,4 +78,24 @@ describe('CommentRepository postgres', () => {
 
     await expect(commentRepo.validateCommentExist('comment-121', '1')).rejects.toThrow(NotFoundError);
   });
+
+  it('should getCommets sucessfully', async () => {
+    await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
+    const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
+    const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
+
+    const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
+
+    await commentRepo.addComment('thread-321', '1', 'content');
+
+    const result = await commentRepo.getComments(threadId);
+    const {
+      id: commentId, username, content, replies,
+    } = result[0];
+
+    expect(commentId).toEqual('comment-123');
+    expect(username).toEqual('dicoding');
+    expect(content).toEqual('content');
+    expect(replies).toEqual([]);
+  });
 });

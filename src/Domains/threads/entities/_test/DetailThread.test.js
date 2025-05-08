@@ -38,7 +38,6 @@ describe('DetailThread', () => {
         username: 'what',
         content: 'where',
       },
-      [],
     );
     const detail = new DetailThread(
       {

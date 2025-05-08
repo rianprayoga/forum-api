@@ -1,4 +1,5 @@
 const CreateThread = require('../../../Domains/threads/entities/CreateThread');
+const CreatedThread = require('../../../Domains/threads/entities/CreatedThread');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const AddThreadUseCase = require('../AddThreadUseCase');
 
@@ -8,15 +9,19 @@ describe('AddThreadUsecase', () => {
     const payload = { title: 'title', body: 'body' };
 
     const threadRepo = new ThreadRepository();
-    threadRepo.addThread = jest.fn(() => Promise.resolve({ title: 'title', body: 'body', id: 'id' }));
+    threadRepo.addThread = jest.fn(() => Promise.resolve(
+      new CreatedThread({
+        title: 'title', body: 'body', id: 'id', owner: credentialId,
+      }),
+    ));
 
     const usecase = new AddThreadUseCase(threadRepo);
 
     const result = await usecase.execute(payload, credentialId);
 
-    expect(result.id).toEqual('id');
-    expect(result.body).toEqual(payload.body);
-    expect(result.title).toEqual(payload.title);
+    expect(result).toStrictEqual(new CreatedThread({
+      title: 'title', body: 'body', id: 'id', owner: credentialId,
+    }));
 
     expect(threadRepo.addThread)
       .toBeCalledWith(new CreateThread(payload), credentialId);
