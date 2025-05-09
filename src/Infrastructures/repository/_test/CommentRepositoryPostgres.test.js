@@ -105,7 +105,8 @@ describe('CommentRepository postgres', () => {
     const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
     const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
 
-    await expect(commentRepo.validateCommentExist(threadId, commentId)).resolves.not.toThrow(NotFoundError);
+    await expect(commentRepo.validateCommentExist(threadId, commentId))
+      .resolves.not.toThrow(NotFoundError);
   });
 
   it('should getCommets sucessfully', async () => {

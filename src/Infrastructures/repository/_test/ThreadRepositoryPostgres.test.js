@@ -51,10 +51,9 @@ describe('ThreadRepository Postgres', () => {
     const repo = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
     const payload = { title: 'title', body: 'body' };
 
-    const {id} = await repo.addThread(payload, owner);
+    const { id } = await repo.addThread(payload, owner);
 
     await expect(repo.validateThreadExist(id)).resolves.not.toThrow(NotFoundError);
-
   });
 
   it('should get thread sucessfully', async () => {
