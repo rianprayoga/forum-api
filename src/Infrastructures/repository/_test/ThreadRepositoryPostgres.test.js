@@ -26,17 +26,35 @@ describe('ThreadRepository Postgres', () => {
     const payload = { title: 'title', body: 'body' };
 
     const result = await repo.addThread(payload, owner);
-    expect(repo.validateThreadExist(result.id)).resolves.not.toThrow(NotFoundError);
-
     expect(result.id).toBe('thread-123');
     expect(result.title).toBe(payload.title);
     expect(result.owner).toBe(owner);
+
+    const gerResult = await repo.getThread(result.id);
+    expect(gerResult.id).toEqual('thread-123');
+    expect(gerResult.title).toEqual(payload.title);
+    expect(gerResult.body).toEqual(payload.body);
+    expect(gerResult.date).not.toBeUndefined();
+    expect(gerResult.username).toEqual('dicoding');
+    expect(gerResult.comments).toEqual([]);
   });
 
-  it('should throw when thread not found', async () => {
+  it('validateThreadExist should throw when thread not found', async () => {
     const repo = new ThreadRepositoryPostgres(pool, () => '123');
 
     await expect(repo.validateThreadExist('payload')).rejects.toThrow(NotFoundError);
+  });
+
+  it('validateThreadExist should not throw when thread found', async () => {
+    const fakeIdGenerator = () => '123'; // stub!
+    const owner = 'user-123';
+    const repo = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+    const payload = { title: 'title', body: 'body' };
+
+    const {id} = await repo.addThread(payload, owner);
+
+    await expect(repo.validateThreadExist(id)).resolves.not.toThrow(NotFoundError);
+
   });
 
   it('should get thread sucessfully', async () => {

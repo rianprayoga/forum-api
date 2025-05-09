@@ -25,10 +25,15 @@ describe('CommentRepository postgres', () => {
 
     const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
 
-    const result = await commentRepo.addComment('thread-321', '1', 'content');
+    const result = await commentRepo.addComment(threadId, '1', 'content');
 
-    await expect(commentRepo.validateCommentExist(threadId, result.id))
-      .resolves.not.toThrowError();
+    const actualComments = await commentRepo.getComments(threadId);
+
+    expect(actualComments[0].id).toEqual(result.id);
+    expect(actualComments[0].username).toEqual('dicoding');
+    expect(actualComments[0].content).toEqual('content');
+    expect(actualComments[0].date).not.toBeUndefined();
+    expect(actualComments[0].replies).toEqual([]);
 
     expect(result.id).toEqual('comment-123');
     expect(result.content).toEqual('content');
@@ -68,7 +73,8 @@ describe('CommentRepository postgres', () => {
 
     await commentRepo.addComment('thread-321', '1', 'content');
 
-    await expect(commentRepo.validateCommentOwnership('comment-123', '1')).resolves.not.toThrowError();
+    await expect(commentRepo.validateCommentOwnership('comment-123', '1')).resolves.not.toThrowError(NotFoundError);
+    await expect(commentRepo.validateCommentOwnership('comment-123', '1')).resolves.not.toThrowError(AuthorizationError);
   });
 
   it('should markAsDeleted sucessfully', async () => {
@@ -91,7 +97,7 @@ describe('CommentRepository postgres', () => {
     await expect(commentRepo.validateCommentExist('comment-121', '1')).rejects.toThrow(NotFoundError);
   });
 
-  it('validateCommentExist should not throw error ', async () => {
+  it('validateCommentExist should  throw error ', async () => {
     await UsersTableTestHelper.addUser({ id: '1', username: 'dicoding' });
     const threadRepo = new ThreadRepositoryPostgres(pool, () => '321');
     const commentRepo = new CommentRepositoryPostgres(pool, () => '123');
@@ -99,7 +105,7 @@ describe('CommentRepository postgres', () => {
     const { id: threadId } = await threadRepo.addThread({ title: 'what', body: 'where' }, '1');
     const { id: commentId } = await commentRepo.addComment(threadId, '1', 'content');
 
-    await expect(commentRepo.validateCommentExist(commentId, '1')).rejects.toThrow(NotFoundError);
+    await expect(commentRepo.validateCommentExist(threadId, commentId)).resolves.not.toThrow(NotFoundError);
   });
 
   it('should getCommets sucessfully', async () => {

@@ -1,4 +1,4 @@
-const { DetailReply } = require('../../Domains/threads/entities/DetailThread');
+const ThreadContstructor = require('../../Domains/threads/ThreadsConstructor');
 
 class GetThreadUseCase {
   constructor({ threadRepository, commentRepository, replyRepository }) {
@@ -11,31 +11,10 @@ class GetThreadUseCase {
     const thread = await this._threadRepository.getThread(threadId);
     const comments = await this._commentRepository.getComments(threadId);
 
-    const commentIds = comments.map((x) => x.id);
-
-    if (commentIds.length !== 0) {
+    if (comments.length !== 0) {
+      const commentIds = comments.map((x) => x.id);
       const replies = await this._replyRepository.getReplies(commentIds);
-
-      const map = new Map();
-      replies.forEach((element) => {
-        const commentId = element.commentid;
-        if (map.has(commentId)) {
-          const tmp = map.get(commentId);
-          tmp.push(new DetailReply(element));
-          map.set(commentId, tmp);
-        } else {
-          map.set(commentId, [new DetailReply(element)]);
-        }
-      });
-
-      const adjustedComments = comments.map((element) => {
-        const tmp = element;
-        tmp.replies = map.has(element.id) ? map.get(element.id) : [];
-        return tmp;
-      });
-
-      thread.comments = adjustedComments;
-      return thread;
+      return ThreadContstructor.build(thread, comments, replies);
     }
 
     return thread;

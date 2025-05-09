@@ -97,7 +97,9 @@ describe('ReplyRepository postgres', () => {
     const { id: replyId } = await replyRepo.addReply(commentId, 'test', '1');
 
     await expect(replyRepo.validateOwnership(commentId, replyId, '1'))
-      .resolves.not.toThrowError();
+      .resolves.not.toThrow(NotFoundError);
+    await expect(replyRepo.validateOwnership(commentId, replyId, '1'))
+      .resolves.not.toThrow(AuthorizationError);
   });
 
   it('should getReplies sucessfully', async () => {
