@@ -34,7 +34,15 @@ describe('ReplyRepository postgres', () => {
     const firstResult = await replyRepo.addReply(commentId, 'test', '1');
     const secondResult = await replyRepoSecond.addReply(commentId, 'test 2', '1');
 
-    const replies = await replyRepo.getReplies([commentId]);
+    const firstReply = await ReplyTableTestHelper.getReply(firstResult.id);
+    expect(firstReply.id).toEqual('reply-abc');
+    expect(firstReply.owner).toEqual('1');
+    expect(firstReply.content).toEqual('test');
+
+    const secondReply = await ReplyTableTestHelper.getReply(secondResult.id);
+    expect(secondReply.id).toEqual('reply-abcd');
+    expect(secondReply.owner).toEqual('1');
+    expect(secondReply.content).toEqual('test 2');
 
     expect(firstResult.id).toEqual('reply-abc');
     expect(firstResult.content).toEqual('test');
@@ -42,10 +50,6 @@ describe('ReplyRepository postgres', () => {
     expect(secondResult.id).toEqual('reply-abcd');
     expect(secondResult.content).toEqual('test 2');
     expect(secondResult.owner).toEqual('1');
-
-    expect(replies[0].id).toEqual('reply-abc');
-    expect(replies[0].username).toEqual('dicoding');
-    expect(replies[0].content).toEqual('test');
   });
 
   it('should delete reply sucessfully', async () => {

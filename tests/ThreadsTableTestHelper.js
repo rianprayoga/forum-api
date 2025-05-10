@@ -3,7 +3,7 @@ const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const ThreadsTableTestHelper = {
 
-  async findThread(id) {
+  async getThread(id) {
     const query = {
       text: 'SELECT * FROM threads WHERE id = $1',
       values: [id],
@@ -11,7 +11,7 @@ const ThreadsTableTestHelper = {
 
     const result = await pool.query(query);
 
-    return result.rows;
+    return result.rows[0];
   },
 
   async cleanTable() {

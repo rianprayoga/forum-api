@@ -30,13 +30,12 @@ describe('ThreadRepository Postgres', () => {
     expect(result.title).toBe(payload.title);
     expect(result.owner).toBe(owner);
 
-    const gerResult = await repo.getThread(result.id);
-    expect(gerResult.id).toEqual('thread-123');
-    expect(gerResult.title).toEqual(payload.title);
-    expect(gerResult.body).toEqual(payload.body);
-    expect(gerResult.date).not.toBeUndefined();
-    expect(gerResult.username).toEqual('dicoding');
-    expect(gerResult.comments).toEqual([]);
+    const getResult = await ThreadsTableTestHelper.getThread(result.id);
+    expect(getResult.id).toEqual('thread-123');
+    expect(getResult.title).toEqual(payload.title);
+    expect(getResult.body).toEqual(payload.body);
+    expect(getResult.created_date).not.toBeUndefined();
+    expect(getResult.owner).toEqual('user-123');
   });
 
   it('validateThreadExist should throw when thread not found', async () => {

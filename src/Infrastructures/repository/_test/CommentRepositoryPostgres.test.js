@@ -27,13 +27,12 @@ describe('CommentRepository postgres', () => {
 
     const result = await commentRepo.addComment(threadId, '1', 'content');
 
-    const actualComments = await commentRepo.getComments(threadId);
+    const actualComments = await CommentTableTestHelper.getComment(result.id);
 
-    expect(actualComments[0].id).toEqual(result.id);
-    expect(actualComments[0].username).toEqual('dicoding');
-    expect(actualComments[0].content).toEqual('content');
-    expect(actualComments[0].date).not.toBeUndefined();
-    expect(actualComments[0].replies).toEqual([]);
+    expect(actualComments.id).toEqual(result.id);
+    expect(actualComments.owner).toEqual('1');
+    expect(actualComments.content).toEqual('content');
+    expect(actualComments.created_date).not.toBeUndefined();
 
     expect(result.id).toEqual('comment-123');
     expect(result.content).toEqual('content');
