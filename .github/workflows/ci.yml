@@ -1,4 +1,5 @@
 name: Continuous Integration
+
 on:
   pull_request:
     branches:
@@ -7,9 +8,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node_version: ['18.x', '20.x']
+        node-version: ['18.x', '20.x']
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
       postgres:
@@ -24,7 +27,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
         ports:
           - 5432:5432
 
