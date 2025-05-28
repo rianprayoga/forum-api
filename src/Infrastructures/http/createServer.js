@@ -50,6 +50,15 @@ const createServer = async (container) => {
     },
   ]);
 
+  // dummy
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: () => ({
+      value: 'Hello world!',
+    }),
+  });
+
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
 
