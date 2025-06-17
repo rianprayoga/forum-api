@@ -46,7 +46,7 @@ server {
         # Add index.php to the list if you are using PHP
         index index.html index.htm index.nginx-debian.html;
 
-        server_name _;
+        server_name empty-lemons-shave-freely.a276.dcdg.xyz;
 
         location / {
 
